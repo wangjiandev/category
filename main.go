@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/micro/go-micro/v2"
@@ -37,10 +38,11 @@ func main() {
 		// 添加consul作为注册中心
 		micro.Registry(consulRegistry),
 	)
-
+	fmt.Println(consulConfig)
 	// 获取mysql配置
 	mysqlConfig := common.GetMysqlConfigFromConsul(consulConfig, "mysql")
-	db, err := gorm.Open("mysql", mysqlConfig.User+":"+mysqlConfig.Password+"@/"+mysqlConfig.Database+"?charset=utf8mb4&parseTime=True&loc=Local")
+	fmt.Println(mysqlConfig)
+	db, err := gorm.Open("mysql", mysqlConfig.User+":"+mysqlConfig.Password+"@tcp(127.0.0.1:3306)/"+mysqlConfig.Database+"?charset=utf8mb4&parseTime=True&loc=Local")
 	if err != nil {
 		log.Error(err)
 	}
@@ -50,6 +52,10 @@ func main() {
 
 	// Initialise service
 	service.Init()
+
+	// Initialise table
+	rp := repository.NewCategoryRepository(db)
+	rp.InitTable()
 
 	categoryDataService := myService.NewCategoryDataService(repository.NewCategoryRepository(db))
 	// Register Handler

@@ -13,11 +13,11 @@ func GetConsulConfig(host string, port int64, prefix string) (config.Config, err
 		consul.StripPrefix(true),  // 是否移除前缀，直接获取配置
 	)
 	// 配置初始化
-	newConfig, err := config.NewConfig()
+	conf, err := config.NewConfig()
 	if err != nil {
-		return nil, err
+		return conf, err
 	}
 	// 加载配置
-	err = config.Load(configSource)
-	return newConfig, err
+	err = conf.Load(configSource)
+	return conf, err
 }

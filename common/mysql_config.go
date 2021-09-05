@@ -1,6 +1,9 @@
 package common
 
-import "github.com/micro/go-micro/v2/config"
+import (
+	"github.com/micro/go-micro/v2/config"
+	log "github.com/micro/go-micro/v2/logger"
+)
 
 type MysqlConfig struct {
 	Host     string `json:"host"`
@@ -14,7 +17,7 @@ func GetMysqlConfigFromConsul(consulConfig config.Config, path ...string) *Mysql
 	mysqlConfig := &MysqlConfig{}
 	err := consulConfig.Get(path...).Scan(mysqlConfig)
 	if err != nil {
-		return nil
+		log.Error(err)
 	}
 	return mysqlConfig
 
